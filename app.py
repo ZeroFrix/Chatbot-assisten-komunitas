@@ -20,15 +20,36 @@ inisialisasi_nltk()
 def muat_dataset(nama_file="dataset_komunitas.csv"):
     try:
         dataframe = pd.read_csv(nama_file)
-        # Pra-pemrosesan data: isi nilai kosong dengan string kosong
-        dataframe['pertanyaan'] = dataframe['pertanyaan'].fillna("").astype(str)
-        dataframe['jawaban'] = dataframe['jawaban'].fillna("").astype(str)
-        dataframe['topik'] = dataframe['topik'].fillna("Umum").astype(str)
-        dataframe['sumber_valid'] = dataframe['sumber_valid'].fillna("Lembaga Resmi").astype(str)
+        
+        # 1. Pengecekan Wajib untuk Kolom 'pertanyaan'
+        if 'pertanyaan' in dataframe.columns:
+            dataframe['pertanyaan'] = dataframe['pertanyaan'].fillna("").astype(str)
+        else:
+            st.error("❌ Kolom 'pertanyaan' tidak ditemukan di dataset CSV Anda!")
+            st.stop()
+            
+        # 2. Pengecekan Wajib untuk Kolom 'jawaban'
+        if 'jawaban' in dataframe.columns:
+            dataframe['jawaban'] = dataframe['jawaban'].fillna("").astype(str)
+        else:
+            st.error("❌ Kolom 'jawaban' tidak ditemukan di dataset CSV Anda!")
+            st.stop()
+            
+        # 3. Pengecekan Opsional untuk Kolom 'topik' (Jika tidak ada, buat otomatis)
+        if 'topik' in dataframe.columns:
+            dataframe['topik'] = dataframe['topik'].fillna("Umum").astype(str)
+        else:
+            dataframe['topik'] = "Umum"
+            
+        # 4. Pengecekan Opsional untuk Kolom 'sumber_valid' (Jika tidak ada, buat otomatis)
+        if 'sumber_valid' in dataframe.columns:
+            dataframe['sumber_valid'] = dataframe['sumber_valid'].fillna("Kanal Resmi Instansi").astype(str)
+        else:
+            dataframe['sumber_valid'] = "Kanal Resmi Instansi"
+            
         return dataframe
     except FileNotFoundError:
         return None
-
 df = muat_dataset()
 
 if df is None:
